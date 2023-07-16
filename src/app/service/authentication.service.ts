@@ -50,5 +50,16 @@ export class AuthenticationService {
     }
     return null;
   }
+
+  public loadToken(): void {
+    const userString = localStorage.getItem('user');
+    if (userString !== null) {
+      this.token = userString;
+    }
+  }
+
+  public getToken(): string {
+    return this.token;
+  }
   
 }
