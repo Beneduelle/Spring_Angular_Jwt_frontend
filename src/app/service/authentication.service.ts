@@ -9,6 +9,8 @@ import { User } from '../model/user';
 })
 export class AuthenticationService {
   private host: string = environment.apiUrl;
+  private token: string = "";
+  private loggedInUsername: string = "";
 
   constructor(private http: HttpClient) { }
 
@@ -22,5 +24,13 @@ export class AuthenticationService {
     return this.http.post<User | HttpErrorResponse>
     (`${this.host}/user/register`, user,
      {observe: 'response'});
+  }
+
+  public logout(user: User): void {
+    this.token = "";
+    this.loggedInUsername = "";
+    localStorage.removeItem('user');
+    localStorage.removeItem('token');
+    localStorage.removeItem('users');
   }
 }
