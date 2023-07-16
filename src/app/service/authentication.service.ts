@@ -42,4 +42,13 @@ export class AuthenticationService {
   public addUserToLocalCache(user: User): void {
     localStorage.setItem('user', JSON.stringify(user));
   }
+
+  public getUserFromLocalCache(): User | null {
+    const userString = localStorage.getItem('user');
+    if (userString !== null) {
+      return JSON.parse(userString);
+    }
+    return null;
+  }
+  
 }
