@@ -61,6 +61,7 @@ html {
 }
 
 .input-group-text {
+    display: inline-block;
     background: #184F72 !important;
     color: white !important;
     border: 0 !important;
