@@ -5,6 +5,8 @@ import { User } from '../model/user';
 import { Subscription } from 'rxjs';
 import { HttpErrorResponse, HttpResponse } from '@angular/common/http';
 import { HeaderType } from '../enum/header-type.enum';
+import { NotificationService } from '../service/notification.service';
+import { NotificationType } from '../enum/notification-type.enum';
 
 @Component({
   selector: 'app-login',
@@ -17,7 +19,7 @@ export class LoginComponent implements OnInit, OnDestroy {
 
   constructor (private router: Router,
      private authenticationService: AuthenticationService,
-    //  private notificationService: NotificationService
+     private notificationService: NotificationService
      ) {
 
   }
@@ -57,7 +59,7 @@ export class LoginComponent implements OnInit, OnDestroy {
         },
         (errorResponse: HttpErrorResponse) => {
           console.log(errorResponse);
-          // this.sendErrorNotification(NotificationType.ERROR, errorResponse.error.message);
+          this.sendErrorNotification(NotificationType.ERROR, errorResponse.error.message);
           this.showLoading = false;
           
         }
@@ -65,13 +67,13 @@ export class LoginComponent implements OnInit, OnDestroy {
     );
   }
 
-  // private sendErrorNotification(notificationType: NotificationType, message: string): void {
-  //   if (message) {
-  //     this.notificationService.notify(notificationType, message);
-  //   } else {
-  //     this.notificationService.notify(notificationType, 'AN ERROR OCCURED. PLEASE TRY AGAIN');
-  //   }
-  // }
+  private sendErrorNotification(notificationType: NotificationType, message: string): void {
+    if (message) {
+      this.notificationService.notify(notificationType, message);
+    } else {
+      this.notificationService.notify(notificationType, 'AN ERROR OCCURED. PLEASE TRY AGAIN');
+    }
+  }
   
 
   ngOnDestroy(): void {
