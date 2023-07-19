@@ -1,6 +1,6 @@
 import { Injectable } from '@angular/core';
 import { environment } from 'src/environments/environmetns';
-import { HttpClient, HttpErrorResponse, HttpResponse } from '@angular/common/http';
+import { HttpClient, HttpErrorResponse, HttpHeaders, HttpResponse } from '@angular/common/http';
 import { Observable } from 'rxjs';
 import { User } from '../model/user';
 import { JwtHelperService } from '@auth0/angular-jwt';
@@ -59,9 +59,9 @@ export class AuthenticationService {
   }
 
   public loadToken(): void {
-    const userString = localStorage.getItem('user');
-    if (userString !== null) {
-      this.token = userString;
+    const tokenString = localStorage.getItem('token');
+    if (tokenString !== null) {
+      this.token = tokenString;
     }
   }
 
@@ -71,6 +71,8 @@ export class AuthenticationService {
 
   public isUserLoggedIn(): boolean {
     this.loadToken();
+    console.log("Token from isUserLoggedIn: " + this.token);
+    
     if (this.token != null && this.token !== '') {
       if (this.jwtHelper.decodeToken(this.token).sub != null || '') {
         if (!this.jwtHelper.isTokenExpired(this.token)) {

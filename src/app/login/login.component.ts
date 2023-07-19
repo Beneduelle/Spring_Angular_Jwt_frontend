@@ -26,8 +26,10 @@ export class LoginComponent implements OnInit, OnDestroy {
 
   ngOnInit(): void {
     if (this.authenticationService.isUserLoggedIn()) {
+      console.log("OnInit if user loggedIn")
       this.router.navigateByUrl('/user/management');
     } else {
+      console.log("OnInit if user not loggedIn");
       this.router.navigateByUrl('/login');
     }
   }
@@ -41,9 +43,13 @@ export class LoginComponent implements OnInit, OnDestroy {
           if (response instanceof HttpResponse) {
             const token = response.headers.get(HeaderType.JWT_TOKEN);
             if (token !== null) {
+              console.log("Token correct: " + token);
+              
               this.authenticationService.saveToken(token);
               const userResponse = response.body;
               if (userResponse !== null) {
+                console.log("User Response not null: " + userResponse);
+                
                 this.authenticationService.addUserToLocalCache(userResponse);
                 this.router.navigateByUrl('/user/management');
                 this.showLoading = false;
@@ -54,7 +60,7 @@ export class LoginComponent implements OnInit, OnDestroy {
               throw new Error('Null pointer exception for token');
             }
           } else if (response instanceof HttpErrorResponse) {
-            // Handling for error response
+            throw new Error("Bad response from backend");
           }
         },
         (errorResponse: HttpErrorResponse) => {
