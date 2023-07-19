@@ -1,4 +1,5 @@
 import { Component } from '@angular/core';
+import { User } from '../model/user';
 
 @Component({
   selector: 'app-register',
@@ -7,4 +8,9 @@ import { Component } from '@angular/core';
 })
 export class RegisterComponent {
 
+  public showLoading = false;
+
+  public onRegister(user: User): void {
+
+  }
 }
