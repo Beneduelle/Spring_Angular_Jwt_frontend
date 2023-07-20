@@ -34,6 +34,7 @@ export class UserComponent implements OnInit {
         (response: User[] | HttpErrorResponse) => {
           if (response instanceof HttpErrorResponse) {
             // Handle error response
+            this.refreshing = false;
             this.sendNotification(NotificationType.ERROR, response.error.message);
           } else {
             // Handle successful response
@@ -44,8 +45,12 @@ export class UserComponent implements OnInit {
             }
           }
           this.refreshing = false;
+        },
+        (errorResponse: HttpErrorResponse) => {
+          this.sendNotification(NotificationType.ERROR, errorResponse.error.message);
+          this.refreshing = false;
         }
-      )
+      )      
     );
   }
 
@@ -58,6 +63,6 @@ export class UserComponent implements OnInit {
   }
 
   ngOnInit(): void {
-  
+    this.getUsers(true);
   }
 }
