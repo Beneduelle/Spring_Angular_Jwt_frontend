@@ -17,6 +17,7 @@ export class UserComponent implements OnInit {
   public users: User[] = [];
   public refreshing: boolean = false;
   private subscriptions: Subscription[] = [];
+  public selectedUser: User | undefined;
 
   constructor(private userService: UserService,
     private notificationService: NotificationService) {
@@ -52,6 +53,11 @@ export class UserComponent implements OnInit {
         }
       )      
     );
+  }
+
+  public onSelectUser(selectedUser: User): void {
+    this.selectedUser = selectedUser;
+    document.getElementById('openUserInfo')?.click();
   }
 
   private sendNotification(notificationType: NotificationType, message: string): void {

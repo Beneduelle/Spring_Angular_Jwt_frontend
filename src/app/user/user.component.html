@@ -63,11 +63,11 @@
                         <td>
                             <img height="40" width="40" src="{{appUser?.profileImageUrl}}" alt="" class="rounded-circle img-fluid img-thumbnail">
                         </td>
-                        <td>{{appUser?.userId}}</td>
-                        <td>{{appUser?.firstName}}</td>
-                        <td>{{appUser?.lastName}}</td>
-                        <td>{{appUser?.username}}</td>
-                        <td>{{appUser?.email}}</td>
+                        <td (click)="onSelectUser(appUser)">{{appUser?.userId}}</td>
+                        <td (click)="onSelectUser(appUser)">{{appUser?.firstName}}</td>
+                        <td (click)="onSelectUser(appUser)">{{appUser?.lastName}}</td>
+                        <td (click)="onSelectUser(appUser)">{{appUser?.username}}</td>
+                        <td (click)="onSelectUser(appUser)">{{appUser?.email}}</td>
                         <td>
                             <span [hidden]="!appUser?.active" class="badge badge-pill badge-success">Active</span>
                             <span [hidden]="appUser?.active" class="badge badge-pill badge-danger">Inactive</span>
@@ -94,7 +94,9 @@
             <div class="modal-dialog" role="document">
                 <div class="modal-content">
                     <div class="modal-header">
-                        <h5 class="modal-title text-center" id="exampleModalLongTitle">John Doe</h5>
+                        <h5 class="modal-title text-center" id="exampleModalLongTitle">{{selectedUser?.firstName}}
+                            {{selectedUser?.lastName}}
+                        </h5>
                             <button type="button" class="close" data-dismiss="modal" aria-label="Close">
                                 <span aria-hidden="true">&times;</span>
                             </button>
@@ -107,41 +109,42 @@
                                         <div class="col-12 col-sm-auto">
                                             <div class="mx-auto" style="width: 120px;">
                                                 <div class="d-flex justify-content-center align-items-center rounded">
-                                                    <img class="rounded" height="120" width="120" src="" alt="">
+                                                    <img class="rounded" height="120" width="120" src="{{selectedUser?.profileImageUrl}}" alt="{{selectedUser?.username}}">
                                                 </div>
                                             </div>
                                         </div>
                                         <div class="col d-flex flex-column flex-sm-row justify-content-between">
                                             <div class="text-left text-sm-left mb-sm-0">
-                                                <h6 class="pt-sm-2 pb-1 mb-0 text-nowrap">John Doe</h6>
-                                                <p class="mb-1">johndoe</p>
+                                                <h6 class="pt-sm-2 pb-1 mb-0 text-nowrap">{{selectedUser?.firstName}}
+                                                    {{selectedUser?.lastName}}</h6>
+                                                <p class="mb-1">{{selectedUser?.username}}</p>
                                                 <div class="">Status:
-                                                    <span class="badge badge-success">Active</span>
-                                                    <span class="badge badge-danger">Inactive</span>
+                                                    <span [hidden]="!selectedUser?.active" class="badge badge-success">Active</span>
+                                                    <span [hidden]="selectedUser?.active" class="badge badge-danger">Inactive</span>
                                                 </div>
                                                 <div class="text-muted">
-                                                    <small>Last Login: 15/15/2020</small>
+                                                    <small>Last Login: {{selectedUser?.logInDateDisplay | date: 'medium'}}</small>
                                                 </div>
                                             </div>
                                             <div class="text-center text-sm-right">
                                                 <div class="text-muted">
-                                                    <small>Joined: 15/15/2020</small>
+                                                    <small>Joined: {{selectedUser?.joinDate | date: 'medium'}}</small>
                                                 </div>
                                             </div>
                                         </div>
                                     </div>
                                     <ul class="list-group list-group-flush">
                                         <li class="list-group-item"></li>
-                                        <li class="list-group-item d-flex justify-content-between">123123123123
+                                        <li class="list-group-item d-flex justify-content-between">{{selectedUser?.userId}}
                                             <i class="fa fa-id-badge"></i>
                                         </li>
-                                        <li class="list-group-item d-flex justify-content-between">email@gmail.com
+                                        <li class="list-group-item d-flex justify-content-between">{{selectedUser?.email}}
                                             <i class="fa fa-envelope float-right"></i>
                                         </li>
-                                        <li class="list-group-item d-flex justify-content-between">ROLE_USER
+                                        <li class="list-group-item d-flex justify-content-between">{{selectedUser?.role?.substring(5)}}
                                             <i class="fas fa-shield-alt float-right"></i>
                                         </li>
-                                        <li class="list-group-item d-flex justify-content-between">15/15/2020
+                                        <li *ngIf="selectedUser?.logInDateDisplay" class="list-group-item d-flex justify-content-between">{{selectedUser?.logInDateDisplay| date: 'medium'}}
                                             <i class="fas fa-sign-in-alt float-right"></i>
                                         </li>
                                         <li class="list-group-item">
