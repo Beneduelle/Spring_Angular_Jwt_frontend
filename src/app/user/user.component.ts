@@ -83,17 +83,35 @@ public onAddNewUser(userForm: NgForm): void {
         this.clickButton('new-user-close');
         this.getUsers(false);
         this.fileName = "";
-        this.profileImage = null; // OK since profileImage is of type File | null
+        this.profileImage = null;
         this.sendNotification(NotificationType.SUCCESS,
           `${response.firstName} ${response.lastName} updated successfully`)
       },
       (errorResponse: HttpErrorResponse) => {
         this.sendNotification(NotificationType.ERROR, errorResponse.error.message);
+        this.profileImage = null;
       }
     )
   )
 }
 
+
+  public searchUsers(searchTerm: string):void {
+    const results: User[] = [];
+    for (const user of this.userService.getUsersFromLocalCache()) {
+      if (user.firstName.toLowerCase().indexOf(searchTerm.toLowerCase()) !== -1 ||
+      user.lastName.toLowerCase().indexOf(searchTerm.toLowerCase()) !== -1 ||
+      user.username.toLowerCase().indexOf(searchTerm.toLowerCase()) !== -1 ||
+      user.email.toLowerCase().indexOf(searchTerm.toLowerCase()) !== -1 ||
+      user.userId.toLowerCase().indexOf(searchTerm.toLowerCase()) !== -1) {
+          results.push(user);
+      }
+    }
+    this.users = results;
+    if (results.length == 0 || !searchTerm) {
+        this.users = this.userService.getUsersFromLocalCache();
+    }
+  }
 
   private sendNotification(notificationType: NotificationType, message: string): void {
     if (message) {
