@@ -181,7 +181,7 @@
                     </div>
                     <div class="modal-body">
                         <div>
-                            <form>
+                            <form #newUserForm="ngForm" (ngSubmit)="onAddNewUser(newUserForm)">
                                 <div class="form-group">
                                     <label for="firstName">First Name</label>
                                     <input type="text" name="firstName" required ngModel class="form-control">
@@ -213,10 +213,11 @@
                                         <span class="input-group-text">Profile Picture</span>
                                     </div>
                                     <div class="custom-file">
-                                        <input type="file" class="custom-file-input" name="ProfileImage">
+                                        <input type="file" class="custom-file-input" name="ProfileImage" 
+                                        (change)="onProfileImageChange($event.target)">
                                         <label class="custom-file-label">
-                                            <span [hidden]="true">fileName</span>
-                                            <span [hidden]="true">Choose File</span>
+                                            <span [hidden]="!fileName">{{ fileName }}</span>
+                                            <span [hidden]="fileName">Choose File</span>
                                         </label>
                                     </div>
                                 </div>
@@ -240,7 +241,7 @@
                     </div>
                     <div class="modal-footer">
                         <button type="button" class="btn btn-secondary" data-dismiss="modal" id="new-user-close">Close</button>
-                        <button type="button" [disabled]="false" class="btn btn-primary">Save changes</button>
+                        <button type="button" (click)="saveNewUser()" [disabled]="newUserForm.invalid" class="btn btn-primary">Save changes</button>
                     </div>
                 </div>
             </div>
