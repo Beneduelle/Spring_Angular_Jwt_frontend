@@ -23,6 +23,8 @@ export class UserComponent implements OnInit {
   public selectedUser: User | undefined;
   public fileName: string = "";
   public profileImage: any;
+  public editUser = new User();
+  private currentUsername: string = "";
 
   constructor(private userService: UserService,
     private notificationService: NotificationService) {
@@ -111,6 +113,32 @@ public onAddNewUser(userForm: NgForm): void {
     if (results.length == 0 || !searchTerm) {
         this.users = this.userService.getUsersFromLocalCache();
     }
+  }
+
+  public onUpdateUser(): void {
+    const formData = this.userService.createUserFormData(this.currentUsername, this.editUser, this.profileImage);
+  this.subscriptions.push(
+    this.userService.updateUser(formData).subscribe(
+      (response: User|any) => {
+        this.clickButton('closeEditUserModalButton');
+        this.getUsers(false);
+        this.fileName = "";
+        this.profileImage = null;
+        this.sendNotification(NotificationType.SUCCESS,
+          `${response.firstName} ${response.lastName} updated successfully`)
+      },
+      (errorResponse: HttpErrorResponse) => {
+        this.sendNotification(NotificationType.ERROR, errorResponse.error.message);
+        this.profileImage = null;
+      }
+    )
+  )
+  }
+
+  public onEditUser(editUser: User): void {
+    this.editUser = editUser;
+    this.currentUsername = editUser.username;
+    this.clickButton('openUserEdit');
   }
 
   private sendNotification(notificationType: NotificationType, message: string): void {
