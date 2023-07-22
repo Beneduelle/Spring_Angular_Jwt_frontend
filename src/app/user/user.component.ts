@@ -7,6 +7,7 @@ import { NotificationType } from '../enum/notification-type.enum';
 import { HttpErrorResponse } from '@angular/common/http';
 import { NgFor } from '@angular/common';
 import { NgForm } from '@angular/forms';
+import { CustomHttpResponse } from '../model/custom-http-response';
 
 @Component({
   selector: 'app-user',
@@ -133,6 +134,21 @@ public onAddNewUser(userForm: NgForm): void {
       }
     )
   )
+  }
+
+  public onDeleteUser(userId: number):void {
+    this.subscriptions.push(
+      this.userService.deleteUser(userId).subscribe(
+        (response) => {
+          this.sendNotification(NotificationType.SUCCESS, response.message);
+          this.getUsers(false);
+        },
+        (errorResponse: HttpErrorResponse) => {
+          this.sendNotification(NotificationType.ERROR, errorResponse.error.message);
+          this.profileImage = null;
+        }
+      )
+    )
   }
 
   public onEditUser(editUser: User): void {
