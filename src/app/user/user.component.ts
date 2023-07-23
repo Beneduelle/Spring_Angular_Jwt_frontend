@@ -245,9 +245,10 @@ public onAddNewUser(userForm: NgForm): void {
     )
   }
 
-  public onDeleteUser(userId: number):void {
+  // public onDeleteUser(userId: number):void {
+  public onDeleteUser(username: string):void {
     this.subscriptions.push(
-      this.userService.deleteUser(userId).subscribe(
+      this.userService.deleteUser(username).subscribe(
         (response) => {
           this.sendNotification(NotificationType.SUCCESS, response.message);
           this.getUsers(false);

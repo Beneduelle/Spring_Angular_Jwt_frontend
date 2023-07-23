@@ -77,9 +77,13 @@
                                 <button (click)="onEditUser(appUser)" class="btn btn-outline-info">
                                     <i class="fas fa-edit"></i>
                                 </button>
-                                <button class="btn btn-outline-danger" (click)="onDeleteUser(appUser.id)">
+                                <!-- <button class="btn btn-outline-danger" (click)="onDeleteUser(appUser.id)">
+                                    <i class="fas fa-trash"></i>
+                                </button> -->
+                                <button class="btn btn-outline-danger" (click)="onDeleteUser(appUser.username)">
                                     <i class="fas fa-trash"></i>
                                 </button>
+
                             </div>
                         </td>
                     </tr>
@@ -162,13 +166,13 @@
                                                                     <div class="col">
                                                                         <div class="form-group">
                                                                             <label>First Name</label>
-                                                                            <input type="text" name="firstName" required [(ngModel)]="user.firstName" class="form-control">
+                                                                            <input type="text" name="firstName" required [(ngModel)]="user.firstName" [ngModelOptions]="{standalone: true}" class="form-control">
                                                                         </div>
                                                                     </div>
                                                                     <div class="col">
                                                                         <div class="form-group">
                                                                             <label>Last Name</label>
-                                                                            <input type="text" name="lastName" required [(ngModel)]="user.lastName" class="form-control">
+                                                                            <input type="text" name="lastName" required [(ngModel)]="user.lastName" [ngModelOptions]="{standalone: true}" class="form-control">
                                                                         </div>
                                                                     </div>
                                                                 </div>
@@ -176,7 +180,7 @@
                                                                     <div class="col">
                                                                         <div class="form-group">
                                                                             <label>Username</label>
-                                                                            <input type="text" name="username" required [(ngModel)]="user.username" class="form-control">
+                                                                            <input type="text" name="username" required [(ngModel)]="user.username" [ngModelOptions]="{standalone: true}" class="form-control">
                                                                         </div>
                                                                     </div>
                                                                 </div>
@@ -184,7 +188,7 @@
                                                                     <div class="col">
                                                                         <div class="form-group">
                                                                             <label>Email</label>
-                                                                            <input type="email" name="email" required [(ngModel)]="user.email" class="form-control">
+                                                                            <input type="email" name="email" required [(ngModel)]="user.email" [ngModelOptions]="{standalone: true}" class="form-control">
                                                                         </div>
                                                                     </div>
                                                                 </div>
@@ -192,7 +196,7 @@
                                                                     <div class="col mb-3">
                                                                         <div class="form-group">
                                                                             <label>Role</label>
-                                                                            <select name="role" required [(ngModel)]="user.role" class="form-control">
+                                                                            <select name="role" required [(ngModel)]="user.role" [ngModelOptions]="{standalone: true}" class="form-control">
                                                                                 <option value="ROLE_USER">USER</option>
                                                                                 <option value="ROLE_HR">HR</option>
                                                                                 <option value="ROLE_MANAGER">MANAGER</option>
@@ -211,11 +215,11 @@
                                                                             <div class="col">
                                                                                 <div class="custom-controls-stacked px-2">
                                                                                     <div class="custom-control custom-checkbox">
-                                                                                        <input type="text" type="checkbox" [(ngModel)]="user.active" class="custom-control">
+                                                                                        <input type="text" type="checkbox" [(ngModel)]="user.active" [ngModelOptions]="{standalone: true}" class="custom-control">
                                                                                         <label class="custom-control-label">Active</label>
                                                                                     </div>
                                                                                     <div class="custom-control custom-checkbox">
-                                                                                        <input name="notLocked" type="checkbox" [(ngModel)]="user.notLocked">
+                                                                                        <input name="notLocked" type="checkbox" [(ngModel)]="user.notLocked" [ngModelOptions]="{standalone: true}">
                                                                                         <label for="" class="custom-control-label">Unlocked</label>
                                                                                     </div>
                                                                                 </div>
