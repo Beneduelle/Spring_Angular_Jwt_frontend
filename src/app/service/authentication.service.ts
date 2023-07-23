@@ -50,7 +50,7 @@ export class AuthenticationService {
     localStorage.setItem('user', JSON.stringify(user));
   }
 
-  public getUserFromLocalCache(): User | null {
+  public getUserFromLocalCache(): User | any {
     const userString = localStorage.getItem('user');
     if (userString !== null) {
       return JSON.parse(userString);

@@ -8,6 +8,7 @@ import { HttpErrorResponse } from '@angular/common/http';
 import { NgFor } from '@angular/common';
 import { NgForm } from '@angular/forms';
 import { CustomHttpResponse } from '../model/custom-http-response';
+import { AuthenticationService } from '../service/authentication.service';
 
 @Component({
   selector: 'app-user',
@@ -19,6 +20,7 @@ export class UserComponent implements OnInit {
   private titleSubject = new BehaviorSubject<string>('Users');
   public titleAction$ = this.titleSubject.asObservable();
   public users: User[] = [];
+  public user: User = new User();
   public refreshing: boolean = false;
   private subscriptions: Subscription[] = [];
   public selectedUser: User | undefined;
@@ -26,9 +28,11 @@ export class UserComponent implements OnInit {
   public profileImage: any;
   public editUser = new User();
   private currentUsername: string = "";
+  public authority: string[] = [];
 
   constructor(private userService: UserService,
-    private notificationService: NotificationService) {
+    private notificationService: NotificationService,
+    private authenticationService: AuthenticationService) {
 
   }
 
@@ -118,22 +122,67 @@ public onAddNewUser(userForm: NgForm): void {
 
   public onUpdateUser(): void {
     const formData = this.userService.createUserFormData(this.currentUsername, this.editUser, this.profileImage);
-  this.subscriptions.push(
-    this.userService.updateUser(formData).subscribe(
-      (response: User|any) => {
-        this.clickButton('closeEditUserModalButton');
-        this.getUsers(false);
-        this.fileName = "";
-        this.profileImage = null;
-        this.sendNotification(NotificationType.SUCCESS,
-          `${response.firstName} ${response.lastName} updated successfully`)
-      },
-      (errorResponse: HttpErrorResponse) => {
-        this.sendNotification(NotificationType.ERROR, errorResponse.error.message);
-        this.profileImage = null;
-      }
+    this.subscriptions.push(
+      this.userService.updateUser(formData).subscribe(
+        (response: User|any) => {
+          this.clickButton('closeEditUserModalButton');
+          this.getUsers(false);
+          this.fileName = "";
+          this.profileImage = null;
+          this.sendNotification(NotificationType.SUCCESS,
+            `${response.firstName} ${response.lastName} updated successfully`)
+        },
+        (errorResponse: HttpErrorResponse) => {
+          this.sendNotification(NotificationType.ERROR, errorResponse.error.message);
+          this.profileImage = null;
+        }
+      )
     )
-  )
+  }
+
+  public onUpdateCurrentUser(user: User): void {
+    this.refreshing = true;
+    this.currentUsername = this.authenticationService.getUserFromLocalCache()?.username
+    const formData = this.userService.createUserFormData(this.currentUsername, this.editUser, this.profileImage);
+    this.subscriptions.push(
+      this.userService.updateUser(formData).subscribe(
+        (response: User|any) => {
+          this.authenticationService.addUserToLocalCache(response);
+          this.getUsers(false);
+          this.fileName = "";
+          this.profileImage = null;
+          this.sendNotification(NotificationType.SUCCESS,
+            `${response.firstName} ${response.lastName} updated successfully`)
+        },
+        (errorResponse: HttpErrorResponse) => {
+          this.sendNotification(NotificationType.ERROR, errorResponse.error.message);
+          this.profileImage = null;
+          this.refreshing = false;
+        }
+      )
+    )
+  }
+
+  public onLogOut(): void {
+
+  }
+
+  public onResetPassword(emailForm: NgForm): void {
+    this.refreshing = true;
+    const emailAddress = emailForm.value['reset-password-email'];
+    this.subscriptions.push(
+      this.userService.resetPassword(emailAddress).subscribe(
+        (response) => {
+          this.sendNotification(NotificationType.SUCCESS, response.message);
+          this.refreshing = false;
+        },
+        (errorResponse: HttpErrorResponse) => {
+          this.sendNotification(NotificationType.WARNING, errorResponse.error.message);
+          this.profileImage = null;
+        },
+        () => emailForm.reset() //finally section, will be executed always
+      )
+    )
   }
 
   public onDeleteUser(userId: number):void {
@@ -170,6 +219,12 @@ public onAddNewUser(userForm: NgForm): void {
   }
 
   ngOnInit(): void {
+    const cachedUser = this.authenticationService.getUserFromLocalCache();
+    if (cachedUser !== null) {
+      this.user = cachedUser;
+    } else {
+      this.user = new User(); // or any other default user object
+    }
     this.getUsers(true);
   }
 }
