@@ -9,6 +9,7 @@ import { NgFor } from '@angular/common';
 import { NgForm } from '@angular/forms';
 import { CustomHttpResponse } from '../model/custom-http-response';
 import { AuthenticationService } from '../service/authentication.service';
+import { Router } from '@angular/router';
 
 @Component({
   selector: 'app-user',
@@ -31,6 +32,7 @@ export class UserComponent implements OnInit {
   public authority: string[] = [];
 
   constructor(private userService: UserService,
+    private router: Router,
     private notificationService: NotificationService,
     private authenticationService: AuthenticationService) {
 
@@ -164,7 +166,9 @@ public onAddNewUser(userForm: NgForm): void {
   }
 
   public onLogOut(): void {
-
+      this.authenticationService.logout();
+      this.router.navigate(["/login"]);
+      this.sendNotification(NotificationType.SUCCESS, `You've been successfully logged out`)
   }
 
   public onResetPassword(emailForm: NgForm): void {
