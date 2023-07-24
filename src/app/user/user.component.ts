@@ -1,4 +1,4 @@
-import { Component, OnInit } from '@angular/core';
+import { Component, OnDestroy, OnInit } from '@angular/core';
 import { BehaviorSubject, Subscription } from 'rxjs';
 import { User } from '../model/user';
 import { UserService } from '../service/user.service';
@@ -12,14 +12,15 @@ import { AuthenticationService } from '../service/authentication.service';
 import { Router } from '@angular/router';
 import { FileUploadStatus } from '../model/file-upload.status';
 import { Role } from '../enum/role.enum';
+import { SubSink } from 'subsink';
 
 @Component({
   selector: 'app-user',
   templateUrl: './user.component.html',
   styleUrls: ['./user.component.css']
 })
-export class UserComponent implements OnInit {
-
+export class UserComponent implements OnInit, OnDestroy {
+  private subs = new SubSink();
   private titleSubject = new BehaviorSubject<string>('Users');
   public titleAction$ = this.titleSubject.asObservable();
   public users: User[] = [];
@@ -47,7 +48,8 @@ export class UserComponent implements OnInit {
 
   public getUsers(showNotification: boolean): void {
     this.refreshing = true;
-    this.subscriptions.push(
+    // this.subscriptions.push(
+      this.subs.add(
       this.userService.getUsers().subscribe(
         (response: User[] | HttpErrorResponse) => {
           if (response instanceof HttpErrorResponse) {
@@ -89,7 +91,8 @@ export class UserComponent implements OnInit {
 
 public onAddNewUser(userForm: NgForm): void {
   const formData = this.userService.createUserFormData("", userForm.value, this.profileImage);
-  this.subscriptions.push(
+  // this.subscriptions.push(
+  this.subs.add(
     this.userService.addUser(formData).subscribe(
       (response: User|any) => {
         this.clickButton('new-user-close');
@@ -127,7 +130,8 @@ public onAddNewUser(userForm: NgForm): void {
 
   public onUpdateUser(): void {
     const formData = this.userService.createUserFormData(this.currentUsername, this.editUser, this.profileImage);
-    this.subscriptions.push(
+    // this.subscriptions.push(
+      this.subs.add(
       this.userService.updateUser(formData).subscribe(
         (response: User|any) => {
           this.clickButton('closeEditUserModalButton');
@@ -149,7 +153,8 @@ public onAddNewUser(userForm: NgForm): void {
     this.refreshing = true;
     this.currentUsername = this.authenticationService.getUserFromLocalCache()?.username
     const formData = this.userService.createUserFormData(this.currentUsername, this.editUser, this.profileImage);
-    this.subscriptions.push(
+    // this.subscriptions.push(
+      this.subs.add(
       this.userService.updateUser(formData).subscribe(
         (response: User|any) => {
           this.authenticationService.addUserToLocalCache(response);
@@ -173,7 +178,8 @@ public onAddNewUser(userForm: NgForm): void {
     formData.append('username', this.user.username);
     formData.append('profileImage', this.profileImage);
 
-    this.subscriptions.push(
+    // this.subscriptions.push(
+      this.subs.add(
       this.userService.updateProfileImage(formData).subscribe(
         (event: HttpEvent<any>) => {
           // console.log(event);
@@ -231,7 +237,8 @@ public onAddNewUser(userForm: NgForm): void {
   public onResetPassword(emailForm: NgForm): void {
     this.refreshing = true;
     const emailAddress = emailForm.value['reset-password-email'];
-    this.subscriptions.push(
+    // this.subscriptions.push(
+      this.subs.add(
       this.userService.resetPassword(emailAddress).subscribe(
         (response) => {
           this.sendNotification(NotificationType.SUCCESS, response.message);
@@ -248,7 +255,8 @@ public onAddNewUser(userForm: NgForm): void {
 
   // public onDeleteUser(userId: number):void {
   public onDeleteUser(username: string):void {
-    this.subscriptions.push(
+    // this.subscriptions.push(
+      this.subs.add(
       this.userService.deleteUser(username).subscribe(
         (response) => {
           this.sendNotification(NotificationType.SUCCESS, response.message);
@@ -301,5 +309,10 @@ public onAddNewUser(userForm: NgForm): void {
       this.user = new User(); // or any other default user object
     }
     this.getUsers(true);
+  }
+  //preventing memory leaks
+  ngOnDestroy(): void {
+    // this.subscriptions.forEach(sub => sub.unsubscribe());
+    this.subs.unsubscribe();
   }
 }
