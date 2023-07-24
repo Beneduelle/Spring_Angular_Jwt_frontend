@@ -15,7 +15,7 @@
                     <i class="fa fa-users"></i>
                     Users
                 </a>
-                <a class="nav-item nav-link ml-3" (click)="changeTitle('Settings')" data-toggle="tab" href="#reset-password">
+                <a [hidden]="!isAdmin" class="nav-item nav-link ml-3" (click)="changeTitle('Settings')" data-toggle="tab" href="#reset-password">
                     <i class="fa fa-cogs"></i>
                     Settings
                 </a>
@@ -34,7 +34,7 @@
                     <form class="form-inline my-2 my-lg-0 justify-content-center">
                         <input name="searchTerm"  #searchInput="ngModel"  ngModel (ngModelChange)="searchUsers(searchInput.value)" type="search" class="form-control mr-sm-2" placeholder="Search users...">
                     </form>
-                    <button class="btn btn-info" type="button" data-toggle="modal" data-target="#addUserModal">
+                    <button [hidden]="!isAdminOrManager" class="btn btn-info" type="button" data-toggle="modal" data-target="#addUserModal">
                         <i class="fa fa-plus"></i>New User
                     </button>
                 </div>
@@ -80,7 +80,7 @@
                                 <!-- <button class="btn btn-outline-danger" (click)="onDeleteUser(appUser.id)">
                                     <i class="fas fa-trash"></i>
                                 </button> -->
-                                <button class="btn btn-outline-danger" (click)="onDeleteUser(appUser.username)">
+                                <button [hidden]="!isAdmin" class="btn btn-outline-danger" (click)="onDeleteUser(appUser.username)">
                                     <i class="fas fa-trash"></i>
                                 </button>
 
@@ -95,7 +95,7 @@
         <button [hidden]="true" type="button" id="openUserEdit" data-toggle="modal" data-target="#editUserModal"></button>        
 
         <!-- Change password -->
-        <div class="tab-pane fade" id="reset-password">
+        <div [hidden]="!isAdmin" class="tab-pane fade" id="reset-password">
             <form #resetPasswordForm="ngForm" (ngSubmit)="onResetPassword(resetPasswordForm)">
                 <fieldset>
                     <legend>User Password Management</legend>
@@ -259,7 +259,9 @@
                                 <div class="card">
                                     <div class="card-body">
                                         <h6 class="card-title font-weight-bold">Permissions From Role:</h6>
-                                        <h6 ngFor="let authority of user.authorities" class="card-text">{{authority}}</h6>
+                                        <div *ngFor="let authority of user.authorities">
+                                            <h6 class="card-text">{{ authority }}</h6>
+                                          </div>
                                     </div>
                                 </div>
                             </div>
@@ -348,7 +350,7 @@
             </div>
         </div>
 
-        <div class="modal draggable fade bd-example-modal-lg" id="addUserModal" tabindex="-1" role="dialog"
+        <div [hidden]="!isAdminOrManager" class="modal draggable fade bd-example-modal-lg" id="addUserModal" tabindex="-1" role="dialog"
         aria-labelledby="exampleModalCenterTitle" aria-hidden="true">
             <div class="modal-dialog" role="document">
                 <div class="modal-content">
@@ -377,7 +379,7 @@
                                     <label for="email">Email</label>
                                     <input type="text" name="email" required ngModel class="form-control">
                                 </div>
-                                <div class="form-group">
+                                <div *ngIf="isAdmin" class="form-group">
                                     <label for="authority">Role</label>
                                     <select name="role" required ngModel="ROLE_USER" class="form-control">
                                         <option value="ROLE_USER">USER</option>
@@ -386,6 +388,10 @@
                                         <option value="ROLE_ADMIN">ADMIN</option>
                                         <option value="ROLE_SUPER_ADMIN">SUPER ADMIN</option>
                                     </select>
+                                </div>
+                                <div class="form-group">
+                                    <label for="authority">Role</label>
+                                s    <input type="text" name="role" required ngModel="USER" readonly class="form-control">
                                 </div>
                                 <div class="input-group mb-2">
                                     <div class="input-group-prepend">
@@ -432,7 +438,7 @@
                 <div class="modal-content">
                     <div class="modal-header">
                         <h5 class="modal-title text-center">Edit {{editUser.firstName}}
-                            {{editUser.lastName}}
+                            {{editUser.lastName}} <small [hidden]="isAdminOrManager">(read only)</small>
                         </h5>
                         <button class="close" type="button" data-dismiss="modal" aria-label="Close">
                             <span aria-hidden="true">&times;</span>
@@ -443,23 +449,23 @@
                             <form #editUserForm="ngForm" (ngSubmit)="onAddNewUser(newUserForm)">
                                 <div class="form-group">
                                     <label for="firstName">First Name</label>
-                                    <input type="text" name="firstName" required [(ngModel)]="editUser.firstName" class="form-control">
+                                    <input type="text" name="firstName" [disabled]="!isAdminOrManager" required [(ngModel)]="editUser.firstName" class="form-control">
                                 </div>
                                 <div class="form-group">
                                     <label for="lastName">Last Name</label>
-                                    <input type="text" name="lastName" required [(ngModel)]="editUser.lastName" class="form-control">
+                                    <input type="text" name="lastName" [disabled]="!isAdminOrManager" required [(ngModel)]="editUser.lastName" class="form-control">
                                 </div>
                                 <div class="form-group">
                                     <label for="username">Username</label>
-                                    <input type="text" name="username" required [(ngModel)]="editUser.username" class="form-control">
+                                    <input type="text" name="username" [disabled]="!isAdminOrManager" required [(ngModel)]="editUser.username" class="form-control">
                                 </div>
                                 <div class="form-group">
                                     <label for="email">Email</label>
-                                    <input type="text" name="email" required [(ngModel)]="editUser.email" class="form-control">
+                                    <input type="text" name="email" [disabled]="!isAdminOrManager" required [(ngModel)]="editUser.email" class="form-control">
                                 </div>
                                 <div class="form-group">
-                                    <label for="authority">Role</label>
-                                    <select name="role" required [(ngModel)]="editUser.role" class="form-control">
+                                    <label for="authority">Role <small [hidden]="isAdmin">(read only)</small></label>
+                                    <select name="role" [disabled]="!isAdmin" required [(ngModel)]="editUser.role" class="form-control">
                                         <option value="ROLE_USER">USER</option>
                                         <option value="ROLE_HR">HR</option>
                                         <option value="ROLE_MANAGER">MANAGER</option>
@@ -472,7 +478,7 @@
                                         <span class="input-group-text">Profile Picture</span>
                                     </div>
                                     <div class="custom-file">
-                                        <input type="file" class="custom-file-input" name="ProfileImage" 
+                                        <input type="file" accept="image/*" [disabled]="!isAdminOrManager" class="custom-file-input" name="ProfileImage" 
                                         (change)="onProfileImageChange($event.target)">
                                         <label class="custom-file-label">
                                             <span [hidden]="!fileName">{{ fileName }}</span>
@@ -483,14 +489,14 @@
                                 <fieldset class="form-group">
                                     <div class="form-check">
                                         <label class="form-check-label">
-                                            <input type="checkbox" name="active" [(ngModel)]="editUser.active" class="form-check-input">
-                                            Active
+                                            <input type="checkbox" [disabled]="!isAdminOrManager" name="active" [(ngModel)]="editUser.active" class="form-check-input">
+                                            Active <small [hidden]="isAdminOrManager">(read only)</small>
                                         </label>
                                     </div>
                                     <div class="form-check disabled">
                                         <label class="form-check-label">
-                                            <input type="checkbox" name="notLocked" [(ngModel)]="editUser.notLocked" class="form-check-input">
-                                            Unlocked
+                                            <input type="checkbox" [disabled]="!isAdminOrManager" name="notLocked" [(ngModel)]="editUser.notLocked" class="form-check-input">
+                                            Unlocked <small [hidden]="isAdminOrManager">(read only)</small>
                                         </label>
                                     </div>
                                 </fieldset>
@@ -500,7 +506,7 @@
                     </div>
                     <div class="modal-footer">
                         <button type="button" class="btn btn-secondary" data-dismiss="modal" id="closeEditUserModalButton">Close</button>
-                        <button type="button" (click)="onUpdateUser()" [disabled]="editUserForm.invalid" class="btn btn-primary">Save changes</button>
+                        <button type="button" (click)="onUpdateUser()" [disabled]="editUserForm.invalid||!isAdminOrManager" class="btn btn-primary">Save changes</button>
                     </div>
                 </div>
             </div>

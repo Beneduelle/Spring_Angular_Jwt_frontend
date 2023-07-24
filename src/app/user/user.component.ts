@@ -11,6 +11,7 @@ import { CustomHttpResponse } from '../model/custom-http-response';
 import { AuthenticationService } from '../service/authentication.service';
 import { Router } from '@angular/router';
 import { FileUploadStatus } from '../model/file-upload.status';
+import { Role } from '../enum/role.enum';
 
 @Component({
   selector: 'app-user',
@@ -30,7 +31,7 @@ export class UserComponent implements OnInit {
   public profileImage: any;
   public editUser = new User();
   private currentUsername: string = "";
-  public authority: string[] = [];
+  public authorities: string[] = [];
   public fileStatus = new FileUploadStatus();
 
   constructor(private userService: UserService,
@@ -265,6 +266,19 @@ public onAddNewUser(userForm: NgForm): void {
     this.editUser = editUser;
     this.currentUsername = editUser.username;
     this.clickButton('openUserEdit');
+  }
+
+  //getter
+  public get isAdmin(): boolean {
+    return this.getUserRole() === Role.ADMIN || this.getUserRole() === Role.SUPER_ADMIN;
+  }
+
+  public get isAdminOrManager(): boolean {
+    return this.isAdmin || this.getUserRole() === Role.MANAGER;
+  }
+
+  private getUserRole(): string {
+    return this.authenticationService.getUserFromLocalCache().role;
   }
 
   private sendNotification(notificationType: NotificationType, message: string): void {

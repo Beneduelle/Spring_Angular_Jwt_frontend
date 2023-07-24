@@ -23,10 +23,10 @@ export class AuthInterceptor implements HttpInterceptor {
       console.log("register action");
       return httpHandler.handle(HttpRequest);
     }
-    if (HttpRequest.url.includes(`${this.authenticationService.host}/user/resetPassword`)) {
-      console.log("password reset action");
-      return httpHandler.handle(HttpRequest);
-    }
+    // if (HttpRequest.url.includes(`${this.authenticationService.host}/user/resetPassword`)) {
+    //   console.log("password reset action");
+    //   return httpHandler.handle(HttpRequest);
+    // }
     this.authenticationService.loadToken();
     const token = this.authenticationService.getToken();
     const request = HttpRequest.clone({ setHeaders: { Authorization: `Bearer ${token}`}});
